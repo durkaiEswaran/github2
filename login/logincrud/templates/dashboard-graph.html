@@ -1,0 +1,317 @@
+{%extends 'layout/main.html'%}
+{%load static%}
+{% load component_tags %}
+{%block title%} Dashboard {%endblock%}
+{%block content%}
+<section class="dashboard" style="height:100vh;margin:0;">
+    {% component 'sidebar' %}{% endcomponent %}
+    <div class="dashboardUsers form-container">
+        <div class="dashboardUser-container">
+            <p style="text-align: left;
+        font: normal normal bold 20px/42px Calibri;
+        letter-spacing: 0px;
+        color: #333333;">Dashboard</p>
+            <div class="usersCount">
+                <p style="padding:5px 10px;text-align: left;
+                font: normal normal bold 20px/42px Calibri;
+                letter-spacing: 0px;
+                color: #333333;">User Overview</p>
+                <div style="display: flex;justify-content: space-evenly;align-items: center;">
+                    <div class="departmentCount">
+                        <p class="p-tag">No of Departments</p>
+                        <p class="count">{{deptcount}}</p>
+                    </div>
+                    <div class="activeInactive">
+                        <p class="p-tag">No of Users</p>
+                        <p class="count">{{ user }}</p>
+                        <div
+                            style="display: flex;justify-content: space-evenly;gap:15px;align-items: center; width:100%;height:40px;">
+                            <div
+                                style="background-color: rgba(144, 144, 245, 0.3);width:100%;height:100%;display: flex;align-items: center;justify-content: space-between;padding:5px 10px;border-radius: 10px;">
+                                <p style="font: normal normal bold 18px/17px Calibri;color: #FFFFFF;font-weight: 300;">
+                                    Active</p>
+                                <p class="activecolor"></p>
+                            </div>
+                            <div
+                                style="background-color: rgba(153, 153, 251, 0.3);width:100%;height:100%;display: flex;justify-content: space-between;padding:5px 10px;align-items: center;border-radius: 10px;">
+                                <p style="font: normal normal bold 18px/17px Calibri;color: #FFFFFF;font-weight: 300;">
+                                    Inactive</p>
+                                <p class="inactivecolor"></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="departmentsV">
+                        <div class="smegrid">
+                            <p class="p-tag">SME</p>
+                            <p class="count">{{SME}}</p>
+                        </div>
+                        <div class="smegrid">
+                            <p class="p-tag">Examiner</p>
+                            <p class="count">{{Examiner}}</p>
+                        </div>
+                        <div class="smegrid">
+                            <p class="p-tag">Employee</p>
+                            <p class="count">{{Employee}}</p>
+                        </div>
+                        <div class="smegrid">
+                            <p class="p-tag">Others</p>
+                            <p class="count">{{ candidate|add:admin }}</p>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="dashboardPanel" style="padding:10px 10px;">
+                <div style="display: flex;justify-content: space-between;align-items: center;">
+                <p style="text-align: left;
+            font: normal normal bold 20px/42px Calibri;
+            letter-spacing: 0px;
+            color: #333333;" id="userRoleDept">User Role</p>
+            <form action="" method="post" id="graphchange">
+                <select name="graph" id="graphoption">
+                    <option value="user_role" selected>User Role</option>
+                    <option value="department">Department</option>
+                </select>
+            </form>
+                </div>
+                <canvas id="myChart" width="1200px" height="250px"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="logout-popup">
+        <form method="POST" action="{% url 'logout' %}" class="pop-up-container">
+            {% csrf_token %}
+            <h2>Are You sure </h2>
+            <p>you want to logout</p>
+            <div class="button-grops" style="display:flex;margin-top:30px;">
+                <p class="cancel-btns" onclick="document.querySelector('.logout-popup').style.display = 'none';">stay
+                </p>
+                <button type="submit" class="save-btns delete-actions">Logout</button>
+            </div>
+</section>
+{%endblock%}
+{%block script%}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const ctx = document.getElementById('myChart').getContext('2d');
+  let myChart; // Hold chart instance
+
+  function getChartData(type) {
+    if (type === "user_role") {
+      return {
+        labels: ['SME', 'Employee', 'Examiner', 'Admin', 'Candidate'],
+        datasets: [
+          {
+            label: 'Total',
+            data: [`{{SME}}`, `{{Employee}}`, `{{Examiner}}`, `{{admin}}`, `{{candidate}}`],
+            backgroundColor: 'rgba(44,122,224, 0.9)'
+          },
+          {
+            label: 'Active',
+            data: [`{{sme_active}}`, `{{employee_active}}`, `{{examiner_active}}`, `{{admin_active}}`, `{{candidate_active}}`],
+            backgroundColor: 'rgba(51,187,65, 0.9)'
+          },
+          {
+            label: 'Inactive',
+            data: [`{{sme_deactive}}`, `{{employee_deactive}}`, `{{examiner_deactive}}`, `{{admin_deactive}}`, `{{candidate_deactive}}`],
+            backgroundColor: 'rgba(259,29,29,0.9)'
+          }
+        ]
+      };
+    } else {
+      return {
+        labels: ['Technical', 'Quality Check', 'B.D', 'Media'],
+        datasets: [
+          {
+            label: 'Total',
+            data: [`{{tech_total}}`, `{{quality_total}}`, `{{b_dev_total}}`, `{{media_total}}`],
+            backgroundColor: 'rgba(44,122,224, 0.9)'
+          },
+          {
+            label: 'Active',
+            data: [`{{tech_active}}`, `{{quality_active}}`, `{{b_dev_active}}`, `{{media_active}}`],
+            backgroundColor: 'rgba(51,187,65, 0.9)'
+          },
+          {
+            label: 'Inactive',
+            data: [`{{tech_deactive}}`, `{{quality_deactive}}`, `{{b_dev_deactive}}`, `{{media_deactive}}`],
+            backgroundColor: 'rgba(259,29,29,0.9)'
+          }
+        ]
+      };
+    }
+  }
+  function renderChart(type) {
+    if (myChart) myChart.destroy(); // Clear old chart
+    const chartData = getChartData(type);
+    myChart = new Chart(ctx, {
+      type: 'bar',
+      data: chartData,
+      options: {
+        plugins: {
+          tooltip: { enabled: true },
+          datalabels: {
+            anchor: 'start',
+            align: 'bottom',
+            formatter: (value) => value,
+            font: { weight: 'bold' }
+          },
+          legend: {
+            display: true,
+            position: 'bottom',
+            labels: {
+              boxWidth: 10,
+              boxHeight: 10,
+              font: { size: 14, style: 'italic' }
+            }
+          }
+        },
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+  }
+
+  // Initial chart render
+  renderChart(document.getElementById('graphoption').value);
+
+  // On change
+  document.getElementById('graphoption').addEventListener('change', function () {
+    document.getElementById('userRoleDept').innerHTML = this.value;
+    renderChart(this.value);
+  });
+});
+
+//department graph
+    
+    
+
+    // document.addEventListener("DOMContentLoaded", function () {
+    //     const ctx = document.getElementById('myChart').getContext('2d');
+    //     new Chart(ctx, {
+    //         type: 'bar',
+    //         data: {
+    //             labels: ['Technical', 'Quality Check', 'B.D', 'Media', 'Process Associate', 'others'],
+    //             datasets: [{
+    //                 label: 'Total',
+    //                 data: [`{{tech_total}}`, `{{quality_total}}`, `{{b_dev_total}}`, `{{media_total}}`, 10, 15],
+    //                 backgroundColor: 'rgba(44,122,224, 0.9)',
+    //                 borderWidth: 0
+    //             },
+    //             {
+    //                 label: 'Active',
+    //                 data: [`{{tech_active}}`, `{{quality_active}}`, `{{b_dev_active}}`, `{{media_active}}`, 8, 10],
+    //                 backgroundColor: 'rgba(51,187,65, 0.9)',
+    //                 borderWidth: 0
+    //             },
+    //             {
+    //                 label: 'Inactive',
+    //                 data: [`{{tech_deactive}}`, `{{quality_deactive}}`, `{{b_dev_deactive}}`, `{{media_deactive}}`, 2, 5],
+    //                 backgroundColor: 'rgba(259,29,29,0.9)',
+    //                 borderWidth: 0
+    //             }
+    //             ]
+    //         },
+    //         options: {
+    //             plugins: {
+    //                 tooltip: {
+    //                     enabled: true
+    //                 },
+    //                 datalabels: {
+    //                     anchor: 'start',
+    //                     align: 'bottom',
+    //                     formatter: (value) => value,
+    //                     font: {
+    //                         weight: 'bold'
+    //                     }
+    //                 },
+    //                 legend: {
+    //                     display: true,    
+    //                     position: 'bottom', 
+    //                     labels: {
+    //                         boxWidth: 10, 
+    //                         boxHeight:10,
+    //                         font: {
+    //                             size: 14,  
+    //                             style: 'italic' 
+    //                         },
+    //                     }
+    //                 }
+
+    //             },
+    //             scales: {
+    //                 y: {
+    //                     beginAtZero: true
+    //                 }
+    //             }
+    //         },
+    //         // plugins: [ChartDataLabels]
+    //     });
+    // });  
+
+    // // user role graph 
+    // document.addEventListener("DOMContentLoaded", function () {
+    //     const ctx = document.getElementById('myChart').getContext('2d');
+    //     new Chart(ctx, {
+    //         type: 'bar',
+    //         data: {
+    //             labels: ['SME', 'Employee', 'Examiner', 'Admin', 'Candidate'],
+    //             datasets: [{
+    //                 label: 'Total',
+    //                 data: [`{{SME}}`, `{{Employee}}`, `{{Examiner}}`, `{{admin}}`, `{{candidate}}`],
+    //                 backgroundColor: 'rgba(44,122,224, 0.9)',
+    //                 borderWidth: 0
+    //             },
+    //             {
+    //                 label: 'Active',
+    //                 data: [`{{sme_active}}`, `{{employee_active}}`, `{{examiner_active}}`, `{{admin_active}}`, `{{candidate_activate}}`],
+    //                 backgroundColor: 'rgba(51,187,65, 0.9)',
+    //                 borderWidth: 0
+    //             },
+    //             {
+    //                 label: 'Inactive',
+    //                 data: [`{{sme_deactive}}`, `{{employee_deactive}}`, `{{examiner_deactive}}`, `{{admin_deactive}}`, `{{candidate_deactivate}}`],
+    //                 backgroundColor: 'rgba(259,29,29,0.9)',
+    //                 borderWidth: 0
+    //             }
+    //             ]
+    //         },
+    //         options: {
+    //             plugins: {
+    //                 tooltip: {
+    //                     enabled: true
+    //                 },
+    //                 datalabels: {
+    //                     anchor: 'start',
+    //                     align: 'bottom',
+    //                     formatter: (value) => value,
+    //                     font: {
+    //                         weight: 'bold'
+    //                     }
+    //                 },
+    //                 legend: {
+    //                     display: true,    
+    //                     position: 'bottom', 
+    //                     labels: {
+    //                         boxWidth: 10, 
+    //                         boxHeight:10,
+    //                         font: {
+    //                             size: 14,  
+    //                             style: 'italic' 
+    //                         },
+    //                     }
+    //                 }
+
+    //             },
+    //             scales: {
+    //                 y: {
+    //                     beginAtZero: true
+    //                 }
+    //             }
+    //         },
+    //         // plugins: [ChartDataLabels]
+    //     });
+    // });  
+</script> 
+{%endblock%}

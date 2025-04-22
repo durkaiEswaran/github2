@@ -1,0 +1,83 @@
+{%extends 'layout/main.html'%}
+{%load static%}
+{%block icon%} <link rel="shortcut icon" href="../../static/images/icons8-login-16.png" type="image/x-icon"> {%endblock%}
+{%block title%} Login {%endblock%}
+{%block login%}
+<div class="background"></div>
+<div class="background1"></div>
+<div class="background2"></div>
+<div class="background3"></div>
+<div class="background4"></div>
+<div class="background5"></div>
+<div class="background6"></div>
+<div class="background7"></div>
+<div class="background8"></div>
+<div class="login-container">
+    <div class="login-form">
+        <form action="" class="form" id="loginForm" method="post">
+            {%csrf_token%}
+            <h3 class="form-title" style="padding-bottom: 20px;">Login To Your Account</h3>
+            <label for="email" class="labels">User Name</label>
+            <input type="text" class="input-email" name="username" id="username" placeholder="user name"> 
+            <label for="password" class="labels">Password</label>
+            <div class="password-eye" style="display: flex;">
+            <input type="password" class="input-password"name="password" id="password" placeholder="********">
+                <img src="{% static 'images/delete.svg' %}" alt="eye" class="eye">
+            </div>
+            <p class="login-error"></p>
+            <button type="submit" class="login-btn" style="margin-top:80px;">Login <img src="../static/images/login_icon.svg" alt="login"
+                    class="login-icon" style=" width:26px;margin-bottom: -8px;"></button>
+        </form>
+    </div>
+    <div class="login-cover-img">
+        <div class="img-container">
+            <img src="{% static 'images/Assessment logo.svg' %}" class="assesment" alt="Assessment logo" draggable="false">
+            <img src="{% static 'images/Rectangle 14.png' %}" class="knowledgeQ" alt="knowledgeQ">
+        </div>
+    </div>
+</div>
+{%endblock%}
+{%block script%}
+<script src="../static/script.js"></script>
+{%endblock%}
+
+<script>
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const response = await fetch("/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": getCookie("csrftoken")
+        },
+        body: JSON.stringify({
+          username: document.getElementById("username").value,
+          password: document.getElementById("password").value,
+        }),
+      });
+
+      if (response.ok) {
+        window.location.href = "/dashboard";
+      } else {
+        const result = await response.json();
+        alert(result.message || "Login failed");
+      }
+    });
+
+    // CSRF helper
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== "") {
+        const cookies = document.cookie.split(";");
+        for (let cookie of cookies) {
+          cookie = cookie.trim();
+          if (cookie.startsWith(name + "=")) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+  </script>

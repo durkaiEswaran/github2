@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {%block icon%}
+    {%endblock%}
+    <title>KQ | {%block title%} {%endblock%}</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="../../static/style.css">
+    <link rel="stylesheet" href="../../static/dashboardgraph.css">
+    <!-- chart js  -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .dashboards {
+            padding: 15px 15px;
+        }
+
+        .icon {
+            align-items: center;
+        }
+
+        .button-group {
+            width: 100%;
+            justify-content: center;
+            height: 80px;
+            align-items: center;
+        }
+
+        .form-container {
+            width: 84%;
+            margin: 3px 10px;
+            padding: 5px 0px;
+        }
+
+        .update-form {
+            padding: 5px 30px 30px 30px;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: Column;
+            justify-content: space-evenly;
+        }
+
+        /* login page error display */
+        .login-error {
+            font-weight: 400;
+            color: red;
+            width: 100%;
+            padding: 8px 0px;
+            text-align: left;
+            font: normal normal normal 16px/26px Calibri;
+        }
+
+        /* delete page styles */
+        .delete-container {
+            width: 100%;
+            height: 100%;
+            margin: 20px;
+            padding: 20px;
+            background: #FFFFFF 0% 0% no-repeat padding-box;
+            box-shadow: 10px 20px 30px #3F27684D;
+            border: 1px solid #D4CDE1;
+            border-radius: 30px;
+        }
+
+        .button-groups {
+            width: 100%;
+            height: 100px;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .errorlist {
+            font: normal normal normal 16px/26px Calibri;
+            color: red;
+            list-style-type: none;
+        }
+
+        .form-labels {
+            padding: 5px 0px;
+        }
+
+        .info {
+            position: relative;
+        }
+
+        .pop-up-delete {
+            position: fixed;
+            display: none;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 20;
+            cursor: pointer;
+        }
+
+        .logout-popup {
+            position: fixed;
+            display: none;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 22;
+            cursor: pointer;
+        }
+
+        .pop-up-container {
+            position: absolute;
+            top: 201px;
+            left: 600px;
+            width: 500px;
+            height: 350px;
+            background: #FFFFFF 0% 0% no-repeat padding-box;
+            box-shadow: 0px 20px 30px #3F27684D;
+            border-radius: 30px;
+            opacity: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pop-up-container h2 {
+            font: normal normal bold 30px/26px Calibri;
+            letter-spacing: 0px;
+            color: #3F2768;
+        }
+
+        .pop-up-container p {
+            font: normal normal normal 26px/40px Calibri;
+            letter-spacing: 0px;
+            color: #3F2768;
+        }
+
+        .cancel-btns,
+        .save-btns {
+            all: unset;
+            width: 130px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 8px;
+        }
+
+        .cancel-btns {
+            background: #FFFFFF 0% 0% no-repeat padding-box;
+            box-shadow: 0px 10px 20px #3F27684D;
+            border: 1px solid #3F2768;
+            border-radius: 10px;
+        }
+
+        .cancel-btns:hover {
+            background-color: #e0e0e0;
+        }
+
+        .save-btns {
+            background: #3F2768 0% 0% no-repeat padding-box;
+            box-shadow: 0px 10px 20px #3F27684D;
+            border-radius: 10px;
+            color: #FFFFFF;
+        }
+
+        .save-btns:hover {
+            background-color: #4a148c;
+        }
+
+        .alertMessage {
+            position: absolute;
+            display: none;
+            left: 40%;
+            top: 10px;
+            min-width: 25%;
+            max-width: 40%;
+            height: auto;
+            background-color: #e5dbdb;
+            border-radius: 10px;
+            padding: 5px 30px;
+        }
+
+        .messageHeader {
+            font: normal normal normal 20px/26px Calibri;
+            font-weight: 500;
+            color: darkred;
+        }
+
+        .messageBody {
+            font: normal normal normal 18px/26px Calibri;
+            color: rgb(99, 88, 88);
+        }
+    </style>
+</head>
+
+<body>
+    {% block login %}
+    {% endblock %}
+    {%block register%}
+    {%endblock%}
+    {%block dashboard %}
+    {%endblock%}
+    {%block content%}
+    {%endblock%}
+    {%block script%}
+    {%endblock%}
+</body>
+</html>

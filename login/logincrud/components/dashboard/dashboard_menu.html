@@ -1,0 +1,44 @@
+{%load static%}
+<div class="options info">
+    <div class="recheck"><img src="{%static 'images/recheck.svg'%}" alt="recheck" style="padding:8px 10px">
+    </div>
+    <div class="profile">
+        <img src="{% static 'images/profile.svg'%}" alt="profile">
+    </div>
+    <h3 style="text-align: center;color:white;font: normal normal normal 18px/26px Source Sans Pro;">KnoweledgeQ
+        </h2>
+        <div class="menu-options">
+            <a href="{% url 'dashboard' %}" style="text-decoration: none;" class="dashboards icon"> 
+               <img src="{% static 'images/dashboard.svg' %}" alt="dashboard" class="icons">
+                <h4 class="caption">dashboard</h4>
+            </a>
+            <div class="dashboards icon">
+                <img src="{% static 'images/question_bank.svg' %}" alt="question_bank" class="icons">
+                <h4 class="caption">Questions</h4>
+            </div>
+            <a href="{% url 'user_list' %}" style="text-decoration: none;" class="dashboards icon">
+               <img src="{% static 'images/user.svg' %}" alt="user" class="icons">
+                <h4 class="caption">Users</h4>
+            </a>
+            <div class="dashboards icon">
+                <img src="{% static 'images/blueprint.svg' %}" alt="Group" class="icons">
+                <h4 class="caption">Blueprint</h4>
+            </div>
+            <div class="dashboards icon">
+                <img src="{% static 'images/assignment.svg' %}" alt="assignment" class="icons">
+                <h4 class="caption">Assignments</h4>
+            </div>
+            <div class="dashboards icon">
+                <img src="{% static 'images/reports.svg' %}" alt="reports" class="icons">
+                <h4 class="caption">Reports</h4>
+            </div>
+            <div class="dashboards icon" onclick="document.querySelector('.logout-popup').style.display = 'block';">
+                <img src="{% static 'images/logout.svg' %}" alt="logout" class="icons">
+                <h4 class="caption">Logout</h4>
+            </div>
+        </div>
+        <img src="{% static 'images/Rectangle 14.png' %}" alt="knowledgeQ" style="padding:10px 10px;">
+</div>
+{%block script%}
+<!-- <script src="../../static/create.js"></script> -->
+{%endblock%}

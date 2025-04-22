@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">
+  <g id="recheck" transform="translate(-1352 -30)">
+    <g id="spacer" transform="translate(1352 30)" fill="#ffffff" stroke="rgba(0,0,0,0)" stroke-width="1" opacity="0">
+      <rect width="40" height="40" stroke="none" fill="#000000"/>
+      <rect x="0.5" y="0.5" width="39" height="39" fill="none"/>
+    </g>
+    <g id="Group_12" data-name="Group 12" transform="translate(1104.382 11.41)">
+      <path id="Line_4" data-name="Line 4" d="M31.182,1.123H-.189A1.311,1.311,0,0,1-1.5-.189,1.311,1.311,0,0,1-.189-1.5H31.182A1.311,1.311,0,0,1,32.494-.189,1.311,1.311,0,0,1,31.182,1.123Z" transform="translate(252.117 31.09)" fill="#ffffff"/>
+      <path id="Line_5" data-name="Line 5" d="M14.543,1.123H-.189A1.311,1.311,0,0,1-1.5-.189,1.311,1.311,0,0,1-.189-1.5H14.543A1.311,1.311,0,0,1,15.855-.189,1.311,1.311,0,0,1,14.543,1.123Z" transform="translate(268.728 39.069)" fill="#ffffff"/>
+      <path id="Line_6" data-name="Line 6" d="M24.978,1.123H-.189A1.311,1.311,0,0,1-1.5-.189,1.311,1.311,0,0,1-.189-1.5H24.978A1.311,1.311,0,0,1,26.29-.189,1.311,1.311,0,0,1,24.978,1.123Z" transform="translate(258.237 47.047)" fill="#ffffff"/>
+    </g>
+  </g>
+</svg>

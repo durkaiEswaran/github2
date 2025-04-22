@@ -1,0 +1,84 @@
+<!-- sidebar page -->
+ {%extends 'layout/main.html'%}
+ {%load static%}
+ {%block title%} Dashboard {%endblock%}
+ {% load component_tags %}
+ {%block dashboard%}
+<section class="dashboard">
+    {% component 'sidebar' %}{% endcomponent %}
+    <!-- user list page -->
+    <div class="user info" style="overflow-y: scroll;">
+        <div class="user-list">
+            <div class="user-title">
+                <p style="font: normal normal normal 27px/34px Calibri;">Users</p>
+                <div class="actions" style="display: flex;">
+                    <img src="../static/images/filter.svg" alt="filter" height="50px" style="background: #3F2768 0% 0% no-repeat padding-box;">
+                    <a href="{% url 'user_create' %}" class="add">
+                        <h3><span>+</span>Add</h3>
+                    </a>
+                </div>
+            </div>
+            <table>
+                <thead>
+                    <th>Action</th>
+                    <th>User Role</th>
+                    <th>Employee Id</th>
+                    <th>User Name</th>
+                    <th>Department</th>
+                    <th>Designation</th>
+                    <th>Mobile No</th>
+                    <th>status</th>
+                </thead>
+                {%for datas in users%}
+                <tr>
+                    <td><a href="{% url 'user_update' datas.id %}" style="text-decoration: none;"><img src="{% static 'images/edit.svg' %}" alt="edit" class="data-actions" id="update"></a>
+                    {% comment %} <img src="{% static 'images/delete_icon.svg' %}" alt="delete" class="data-actions" onclick="deleteUser('{{ datas.id }}')">  {% endcomment %}
+                    <img src="{% static 'images/delete_icon.svg' %}" alt="delete" class="data-actions" onclick="popupdelete('{{ datas.id }}')"> 
+                    <td> {{datas.user_role}}</td>
+                    <td>{{datas.user_name}}</td>
+                    <td>{{datas.email_id}}</td>
+                    <td>{{datas.department}}</td>
+                    <td>{{datas.designation}}</td>
+                    <td>{{datas.mobile_number}}</td>
+                    <td>
+                        <p class="status">{% if datas.is_active %} Active {% else %} Deactive {% endif %}</p>
+                    </td>
+                </tr>
+                {%endfor%}
+                <div class="pop-up-delete">
+                    <div class="pop-up-container">
+                    <h2>Are You sure </h2>
+                    <p>you want delete the user</p>
+                    <div class="button-groups">
+                    <button class="cancel-btns" onclick=cancel()>cancel</button>
+                    <button class="save-btns delete-actions">delete</button>
+                    </div>
+                    </div>
+            </table>
+        </div>
+    </div>
+    <div class="logout-popup">
+        <form method="POST" action="{% url 'logout' %}" class="pop-up-container">
+            {% csrf_token %}
+            <h2>Are You sure </h2>
+            <p>you want to logout</p>
+            <div class="button-grops" style="display:flex;margin-top:30px;">
+            <p class="cancel-btns" onclick="document.querySelector('.logout-popup').style.display = 'none';">stay</p>
+            <button type="submit" class="save-btns delete-actions">Logout</button>
+            </div>
+        </form>
+</div>
+</section>
+{%endblock%}
+{%block script%}
+<script src="../static/create.js"></script>
+{%endblock%}
+{% comment %} <div class="pop-up-delete">
+                    <div class="pop-up-container">
+                    <h2>Are You sure </h2>
+                    <p>you want delete the user</p>
+                    <div class="button-groups">
+                    <button class="cancel-btns" onclick=cancel()>cancel</button>
+                    <button class="save-btns delete-actions" onclick="deleteUser('{{ datas.id }}')"">delete</button>
+                    </div>
+                    </div> {% endcomment %}

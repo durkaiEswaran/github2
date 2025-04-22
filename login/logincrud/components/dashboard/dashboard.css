@@ -1,0 +1,64 @@
+.options {
+    width: 16%;
+    height: 100vh;
+    background: #3F2768 0% 0% no-repeat padding-box;
+    opacity: 1;
+}
+.user {
+    width: 84%;
+    height: 100vh;
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    opacity: 1;
+}
+.menu-options {
+    display: block;
+    justify-content: center;
+    align-items: center;
+}
+.icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0px 20px;
+}
+.icons {
+    padding: 0px 19px;
+}
+
+.recheck {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-content: flex-end;
+}
+
+.profile {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 180px;
+    height: 180px;
+    margin: 10px 0px 10px 40px;
+    border-radius: 50%;
+    background-color: #fff;
+}
+
+.caption {
+    text-align: left;
+    font: normal normal normal 18px/26px Source Sans Pro;
+    letter-spacing: 0px;
+    color: #FFFFFF;
+    opacity: 1;
+}
+
+.dashboards {
+    padding: 10px 15px;
+}
+
+.dashboards:hover {
+    background-color: rgba(0, 0, 0, 0.3);
+}
+/* .icons:active{
+    background-color: rgba(188, 33, 33, 0.3);
+    color:red;
+} */

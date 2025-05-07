@@ -46,6 +46,20 @@ class UserForm(forms.ModelForm):
         self.fields['employee_id'].initial = ''
         self.fields['email_id'].initial = ''
         self.fields['mobile_number'].initial = ''
+
+
+class ImageUploadForm(forms.Form):
+    image = forms.ImageField()
+
+    def clean_image(self):
+        image = self.cleaned_data.get('image')
+        if image:
+            if not image.content_type.startswith('image/'):
+                raise forms.ValidationError('Invalid file type. Only images are allowed.')
+            if image.size > 5 * 1024 * 1024:
+                raise forms.ValidationError('Image file too large ( > 5MB ).')
+        return image
+
 """def clean_email_id(self):
     email_id = self.cleaned_data.get("email_id")
     if email_id and User.objects.filter(email_id=email_id).exclude(id=self.instance.pk or 0).exists():

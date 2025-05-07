@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image to Caption</title>
+    <style>
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .card {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: center;
+        }
+        .card img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <h2>Upload Image</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" name="action" value="upload">Generate Caption</button>
+        {% if caption %}
+            <button type="submit" name="action" value="save">Save</button>
+            <button type="submit" name="action" value="cancel">Cancel</button>
+        {% endif %}
+    </form>
+
+    {% if image_url %}
+        <h3>Uploaded Image:</h3>
+        <img src="{{ image_url }}" width="300">
+        <h3>Caption:</h3>
+        <p>{{ caption }}</p>
+    {% endif %}
+
+    {% if saved_data %}
+        <h2>Saved Images & Captions</h2>
+        <div class="grid">
+            {% for item in saved_data %}
+                <div class="card">
+                    <img src="{{ item.image.url }}">
+                    <p>{{ item.caption }}</p>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</body>
+</html>

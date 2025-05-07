@@ -19,3 +19,9 @@ class User(models.Model):
 
     def __str__(self):
         return self.user_name
+    
+
+class ImageCaption(models.Model):
+    image = models.ImageField(upload_to='uploads/')
+    caption = models.TextField()
+    uploaded_at = models.DateTimeField(auto_now_add=True)

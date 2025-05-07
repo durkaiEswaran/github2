@@ -256,6 +256,53 @@ def dashborard_view(request):
 
     return render(request, 'dashboard-graph.html', context)
 
+from .forms import ImageUploadForm
+from django.core.files.storage import FileSystemStorage
+from .tests import generate_caption
+from .models import ImageCaption
+
+def upload_image(request):
+    caption = None
+    image_url = None
+    image_path = None
+    saved_data = ImageCaption.objects.all().order_by('-uploaded_at')
+    temp_file_name = None
+
+    if request.method == 'POST':
+        form = ImageUploadForm(request.POST, request.FILES)
+        action = request.POST.get('action')
+
+        if action == 'cancel':
+            return redirect('upload_image')
+
+        if form.is_valid():
+            image = form.cleaned_data['image']
+            fs = FileSystemStorage()
+            filename = fs.save(image.name, image)
+            image_path = fs.path(filename)
+            image_url = fs.url(filename)
+            temp_file_name = filename
+
+            caption = generate_caption(image_path)
+
+            if action == 'save':
+                ImageCaption.objects.create(image=filename, caption=caption)
+                return redirect('upload_image')
+
+            return render(request, 'image.html', {
+                'form': form,
+                'caption': caption,
+                'image_url': image_url,
+                'saved_data': saved_data
+            })
+    else:
+        form = ImageUploadForm()
+
+    return render(request, 'image.html', {
+        'form': form,
+        'saved_data': saved_data
+    })
+
 '''
 @jwt_required
 def dashborard_view(request):

@@ -13,6 +13,7 @@ urlpatterns = [
     path('users/delete/<int:pk>/', views.user_delete_api, name='user_delete_api'),
     path('update/<int:id>/', views.user_update, name='user_update'),
     path('dashboarduser/',views.dashborard_view,name="dashboard"),
-    path('logout/', views.logout_view, name='logout'), 
+    path('logout/', views.logout_view, name='logout'),
+    path('imagetotext', views.upload_image, name='upload_image'), 
 ]
     # path('delete/<int:id>/', views.user_delete, name='user_delete'),

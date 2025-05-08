@@ -1,0 +1,738 @@
+{% extends 'layout/main.html' %}
+{% load static %}
+{% block title %} Dashboard {% endblock %}
+{% load component_tags %}
+
+{% block content %}
+<section class="dashboard" style="height:100vh;margin:0;">
+    {% component 'sidebar' %}{% endcomponent %}
+    <div class="text-generation-container form-container">
+        <div class="user-text-generation">
+            <div class="text-generation-area">
+                <header class="header">
+                    <div class="container header-container">
+                        <div class="logo">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="icon" style="color:blue;">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                            <h1>Image to Text</h1>
+                        </div>
+                    </div>
+                </header>
+                <div id="dropArea" class="upload-box">
+                    <input type="file" id="imageInput" name="image" accept="image/jpeg, image/jpg, image/png" hidden>
+                    <div class="upload-msg" onclick="document.getElementById('imageInput').click();">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="icon-large">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        <p>Drag and drop an image here, or</p>
+                        <label class="btn-upload">
+                            <span>Browse files</span>
+                            <input type="file" id="file-input" accept="image/*">
+                        </label>
+                        <p class="upload-note support-text">Supported formats: PNG, JPG, GIF</p>
+                    </div>
+                </div>
+
+                <button id="generateBtn" style="padding:8px 10px; display: none;" class="save-btns">Generate
+                    Caption</button>
+                <div id="loadingSpinner">
+                    <div class="spinner"></div>
+                    <p>Generating caption...</p>
+                </div>
+                <div id="result" style="display:none; margin-top: 20px; position: relative; background: #FFFFFF 0% 0% no-repeat padding-box;
+                box-shadow: 10px 20px 30px #3F27684D;
+                border: 1px solid #D4CDE1;
+                border-radius: 30px;padding:20px;">
+                    <span id="cancelBtn"
+                        style="position:absolute; top:0; right:0; cursor:pointer; font-size: 24px; color:red;">&times;</span>
+                    <h3>Uploaded Image:</h3>
+                    <div style="width:400px;height:350px;margin:auto;border-radius: 10px;">
+                        <img id="preview" style="width:100%;height:100%;object-fit: cover;" />
+                    </div>
+                    <h3>Caption:</h3>
+                    <p id="captionText"></p>
+                    <div style="display: flex;justify-content: center;align-items: center;">
+                        <button id="cancelBtn" class="cancel-btns">Cancel</button>
+                        <button id="saveBtn" class="save-btns">Save</button>
+                    </div>
+
+                </div>
+
+                <div class="grid">
+                    {% for item in saved_data %}
+                    <div class="card">
+                        <img src="{{ item.image.url }}">
+                        <p>{{ item.caption }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="logout-popup">
+            <form method="POST" action="{% url 'logout' %}" class="pop-up-container">
+                {% csrf_token %}
+                <h2>Are You sure</h2>
+                <p>you want to logout</p>
+                <div class="button-grops" style="display:flex;margin-top:30px;">
+                    <p class="cancel-btns" onclick="document.querySelector('.logout-popup').style.display = 'none';">
+                        stay
+                    </p>
+                    <button type="submit" class="save-btns delete-actions">Logout</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<style>
+    .upload-box {
+        border: 2px dashed #ccc;
+        padding: 40px;
+        text-align: center;
+        border-radius: 16px;
+        background: #f8fbff;
+        transition: 0.3s ease-in-out;
+        margin-bottom: 20px;
+    }
+
+    .upload-box.dragover {
+        background-color: #e6f7ff;
+        border-color: #3399ff;
+    }
+
+    .upload-msg {
+        cursor: pointer;
+    }
+
+    .browse {
+        color: #007bff;
+        text-decoration: underline;
+        cursor: pointer;
+    }
+
+    .support-text {
+        font-size: 12px;
+        color: #888;
+    }
+
+    .spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid #ccc;
+        border-top-color: #007bff;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 20px auto;
+    }
+
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    #loadingSpinner {
+        display: none;
+        text-align: center;
+    }
+
+    .user-text-generation {
+        width: 98%;
+        height: 98vh;
+        margin: 15px;
+        padding: 20px;
+        background: #FFFFFF 0% 0% no-repeat padding-box;
+        box-shadow: 10px 20px 30px #3F27684D;
+        border: 1px solid #D4CDE1;
+        border-radius: 30px;
+    }
+
+    /* Reset & Base Styles */
+    :root {
+        /* Colors */
+        --blue-50: #f0f7ff;
+        --blue-100: #e0effe;
+        --blue-200: #b9dffd;
+        --blue-300: #7cc5fb;
+        --blue-400: #36a9f8;
+        --blue-500: #0c96ed;
+        --blue-600: #0072c6;
+        --blue-700: #015aa1;
+        --blue-800: #064b85;
+        --blue-900: #0a406f;
+
+        --gray-50: #f9fafb;
+        --gray-100: #f3f4f6;
+        --gray-200: #e5e7eb;
+        --gray-300: #d1d5db;
+        --gray-400: #9ca3af;
+        --gray-500: #6b7280;
+        --gray-600: #4b5563;
+        --gray-700: #374151;
+        --gray-800: #1f2937;
+        --gray-900: #111827;
+
+        --green-500: #10b981;
+        --green-600: #059669;
+
+        /* Spacing (8px system) */
+        --space-1: 0.25rem;
+        /* 4px */
+        --space-2: 0.5rem;
+        /* 8px */
+        --space-3: 0.75rem;
+        /* 12px */
+        --space-4: 1rem;
+        /* 16px */
+        --space-5: 1.25rem;
+        /* 20px */
+        --space-6: 1.5rem;
+        /* 24px */
+        --space-8: 2rem;
+        /* 32px */
+        --space-10: 2.5rem;
+        /* 40px */
+        --space-12: 3rem;
+        /* 48px */
+
+        /* Shadows */
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+
+        /* Border Radius */
+        --radius-sm: 0.25rem;
+        --radius: 0.5rem;
+        --radius-lg: 0.75rem;
+        --radius-xl: 1rem;
+
+        /* Font Sizes */
+        --text-xs: 0.75rem;
+        --text-sm: 0.875rem;
+        --text-base: 1rem;
+        --text-lg: 1.125rem;
+        --text-xl: 1.25rem;
+        --text-2xl: 1.5rem;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        line-height: 1.5;
+        color: var(--gray-900);
+        background-color: var(--gray-50);
+        min-height: 100vh;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 64rem;
+        margin: 0 auto;
+        padding: 0 var(--space-4);
+    }
+
+    /* Header Styles */
+    .header {
+        background-color: white;
+        box-shadow: var(--shadow-sm);
+        padding: var(--space-4) 0;
+    }
+
+    .header-container {
+        display: flex;
+        align-items: center;
+    }
+
+    .logo {
+        display: flex;
+        align-items: center;
+    }
+
+    .logo h1 {
+        font-size: var(--text-xl);
+        font-weight: 600;
+        margin-left: var(--space-2);
+        color: var(--gray-900);
+    }
+
+    .icon {
+        color: var(--blue-600);
+    }
+
+    .icon-large {
+        color: var(--blue-500);
+    }
+
+    /* Main Content Styles */
+    main {
+        padding: var(--space-8) 0;
+    }
+
+    .card {
+        background-color: white;
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        transition: box-shadow 0.3s ease;
+        padding: var(--space-6);
+        margin-bottom: var(--space-8);
+    }
+
+    .card:hover {
+        box-shadow: var(--shadow-md);
+    }
+
+    .card-title {
+        font-size: var(--text-2xl);
+        font-weight: 500;
+        color: var(--gray-900);
+        margin-bottom: var(--space-4);
+    }
+
+    /* Upload Form Styles */
+    .upload-form {
+        border: 2px dashed var(--gray-300);
+        border-radius: var(--radius);
+        padding: var(--space-8);
+        text-align: center;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+
+    .upload-form:hover {
+        border-color: var(--blue-400);
+    }
+
+    .upload-form.active {
+        border-color: var(--blue-500);
+        background-color: var(--blue-50);
+    }
+
+    .upload-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .upload-content p {
+        color: var(--gray-700);
+        margin-top: var(--space-4);
+        margin-bottom: var(--space-2);
+    }
+
+    .upload-note {
+        font-size: var(--text-sm);
+        color: var(--gray-500);
+        margin-top: var(--space-2);
+    }
+
+    .btn-upload {
+        display: inline-block;
+        position: relative;
+        cursor: pointer;
+    }
+
+    .btn-upload span {
+        display: inline-block;
+        padding: var(--space-2) var(--space-4);
+        background-color: var(--blue-600);
+        color: white;
+        font-weight: 500;
+        border-radius: var(--radius);
+        transition: background-color 0.2s ease;
+    }
+
+    .btn-upload:hover span {
+        background-color: var(--blue-700);
+    }
+
+    .btn-upload input {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    /* Results Area Styles */
+    .results-area {
+        margin-top: var(--space-8);
+    }
+
+    .image-preview,
+    .text-output {
+        margin-bottom: var(--space-6);
+    }
+
+    .image-preview h3,
+    .text-output h3 {
+        font-size: var(--text-lg);
+        font-weight: 500;
+        color: var(--gray-900);
+        margin-bottom: var(--space-3);
+    }
+
+    .preview-container {
+        background-color: var(--gray-100);
+        border-radius: var(--radius);
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        aspect-ratio: 16 / 9;
+    }
+
+    #preview-image {
+        max-width: 100%;
+        max-height: 400px;
+        object-fit: contain;
+    }
+
+    .output-container {
+        background-color: var(--gray-50);
+        border-radius: var(--radius);
+        padding: var(--space-4);
+        min-height: 100px;
+    }
+
+    .description-text {
+        color: var(--gray-800);
+    }
+
+    .placeholder-text {
+        color: var(--gray-400);
+        font-style: italic;
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+        display: flex;
+        justify-content: flex-end;
+        gap: var(--space-3);
+        margin-top: var(--space-4);
+    }
+
+    .btn-secondary,
+    .btn-primary {
+        display: flex;
+        align-items: center;
+        padding: var(--space-2) var(--space-4);
+        border-radius: var(--radius);
+        font-weight: 500;
+        transition: all 0.2s ease;
+        cursor: pointer;
+        border: none;
+    }
+
+    .btn-secondary {
+        background-color: white;
+        color: var(--gray-700);
+        border: 1px solid var(--gray-300);
+    }
+
+    .btn-secondary:hover {
+        background-color: var(--gray-50);
+    }
+
+    .btn-primary {
+        background-color: var(--blue-600);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background-color: var(--blue-700);
+    }
+
+    .btn-primary:disabled {
+        background-color: var(--gray-400);
+        cursor: not-allowed;
+    }
+
+    .btn-primary.saved {
+        background-color: var(--green-600);
+    }
+
+    .btn-secondary svg,
+    .btn-primary svg {
+        margin-right: var(--space-2);
+    }
+
+    /* Loader Styles */
+    .loader {
+        display: flex;
+        align-items: center;
+    }
+
+    .loader span {
+        margin-left: var(--space-2);
+        color: var(--gray-500);
+    }
+
+    .spin {
+        animation: spin 1.5s linear infinite;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* Cursor Animation */
+    .cursor {
+        display: inline-block;
+        width: 2px;
+        height: 1em;
+        background-color: var(--blue-500);
+        margin-left: 2px;
+        vertical-align: middle;
+        animation: blink 1s step-end infinite;
+    }
+
+    @keyframes blink {
+
+        0%,
+        100% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0;
+        }
+    }
+
+    /* Responsive Styles */
+    @media (max-width: 768px) {
+        .card {
+            padding: var(--space-4);
+        }
+
+        .upload-form {
+            padding: var(--space-4);
+        }
+
+        .card-title {
+            font-size: var(--text-xl);
+        }
+
+        .action-buttons {
+            flex-direction: column-reverse;
+            gap: var(--space-2);
+        }
+
+        .btn-secondary,
+        .btn-primary {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block script %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let selectedFile = null;
+        let currentImageUrl = '';
+        let currentFilename = '';
+        let currentCaption = '';
+        let isSaving = false;
+
+        const dropArea = document.getElementById('dropArea');
+        const imageInput = document.getElementById('imageInput');
+        const generateBtn = document.getElementById('generateBtn');
+        const saveBtn = document.getElementById('saveBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+
+        // Highlight drop area on drag
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, e => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropArea.classList.add('dragover');
+            });
+        });
+
+        // Remove highlight
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, e => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropArea.classList.remove('dragover');
+            });
+        });
+
+        // Handle drop
+        dropArea.addEventListener('drop', e => {
+            const file = e.dataTransfer.files[0];
+            if (validateImage(file)) {
+                selectedFile = file;
+                document.querySelector('.support-text').innerHTML = file.name;
+                generateBtn.style.display = 'inline-block';
+            }
+        });
+
+        // Manual file selection
+        imageInput.addEventListener('change', e => {
+            const file = e.target.files[0];
+            if (validateImage(file)) {
+                selectedFile = file;
+                document.querySelector('.support-text').innerHTML = file.name;
+                generateBtn.style.display = 'inline-block';
+            }
+        });
+
+        function validateImage(file) {
+            const validTypes = ['image/jpeg', 'image/png', 'image/jp2'];
+            if (!validTypes.includes(file.type)) {
+                alert('Only JPG, JPEG2000, and PNG files are allowed.');
+                return false;
+            }
+            if (file.size > 5 * 1024 * 1024) {
+                alert('File size should be under 5MB.');
+                return false;
+            }
+            return true;
+        }
+
+        generateBtn.addEventListener('click', generateCaption);
+        if (saveBtn) saveBtn.addEventListener('click', saveCaption);
+        if (cancelBtn) cancelBtn.addEventListener('click', cancelCaption);
+
+        async function generateCaption() {
+            if (!selectedFile) return;
+
+            const formData = new FormData();
+            formData.append('image', selectedFile);
+
+            document.getElementById('loadingSpinner').style.display = 'block';
+            generateBtn.disabled = true;
+
+            try {
+                const response = await fetch('/generate-caption-api/', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    currentImageUrl = data.image_url;
+                    currentFilename = data.filename;
+                    currentCaption = data.caption;
+
+                    document.getElementById('preview').src = currentImageUrl;
+                    document.getElementById('captionText').textContent = currentCaption;
+                    document.getElementById('result').style.display = 'block';
+                } else {
+                    // alert('Failed to generate caption.');
+                }
+            } catch (error) {
+                alert('An error occurred while generating the caption.');
+                console.error(error);
+            } finally {
+                document.getElementById('loadingSpinner').style.display = 'none';
+                generateBtn.disabled = false;
+            }
+        }
+
+        async function saveCaption() {
+            if (isSaving) return;
+            isSaving = true;
+
+            try {
+                const response = await fetch('/dashboard/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCSRFToken()
+                    },
+                    body: JSON.stringify({
+                        filename: currentFilename,
+                        caption: currentCaption
+                    })
+                });
+                console.log(body)
+                if (response.ok) {
+                    setTimeout(() => {
+                        window.location.href = '/dashboard/';
+                    }, 1000);
+                } else {
+                    alert('Failed to save caption.');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Error saving caption.');
+            } finally {
+                isSaving = false;
+            }
+        }
+
+        function cancelCaption() {
+            selectedFile = null;
+            currentImageUrl = '';
+            currentFilename = '';
+            currentCaption = '';
+
+            document.getElementById('preview').src = '';
+            document.getElementById('captionText').textContent = '';
+            document.getElementById('result').style.display = 'none';
+            generateBtn.style.display = 'none';
+            document.querySelector('.support-text').innerHTML = 'Supports: JPG, JPEG2000, PNG';
+            imageInput.value = '';
+        }
+
+        function getCSRFToken() {
+            const name = 'csrftoken';
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                cookie = cookie.trim();
+                if (cookie.startsWith(name + '=')) {
+                    return decodeURIComponent(cookie.slice(name.length + 1));
+                }
+            }
+            return '';
+        }
+    });
+
+
+</script>
+{% endblock %}
+
+<!-- <div class="action-buttons">
+    <button class="btn-secondary" id="cancelBtn">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+      Cancel
+    </button>
+    <button class="btn-primary" id="saveBtn" disabled>
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+        <polyline points="17 21 17 13 7 13 7 21"></polyline>
+        <polyline points="7 3 7 8 15 8"></polyline>
+      </svg>
+      Save
+    </button>
+  </div> -->

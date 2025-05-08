@@ -14,7 +14,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 import requests
 import jwt
-from jwt.exceptions import ExpiredSignatureError,InvalidTokenError
+from jwt import ExpiredSignatureError, InvalidTokenError
 from datetime import datetime, timedelta
 from login import settings 
 from django.views.generic import TemplateView
@@ -289,7 +289,7 @@ def upload_image(request):
                 ImageCaption.objects.create(image=filename, caption=caption)
                 return redirect('upload_image')
 
-            return render(request, 'image.html', {
+            return render(request, 'imagetotext.html', {
                 'form': form,
                 'caption': caption,
                 'image_url': image_url,
@@ -298,7 +298,7 @@ def upload_image(request):
     else:
         form = ImageUploadForm()
 
-    return render(request, 'image.html', {
+    return render(request, 'imagetotext.html', {
         'form': form,
         'saved_data': saved_data
     })
